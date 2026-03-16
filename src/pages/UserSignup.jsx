@@ -47,7 +47,8 @@ export default function UserSignup() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/send-otp`,
-        { email: data.email }
+        { email: data.email },
+        { withCredentials: true }
       );
       if (response.status === 200) {
         setShowOtpStep(true);
@@ -67,7 +68,8 @@ export default function UserSignup() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/register`,
-        { ...formData, otp }
+        { ...formData, otp },
+        { withCredentials: true }
       );
       if (response.status === 201) {
         localStorage.setItem("token", response.data.token);

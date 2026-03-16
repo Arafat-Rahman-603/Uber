@@ -51,7 +51,8 @@ export default function RiderSignup() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/riders/send-otp`,
-        { email: formData.email }
+        { email: formData.email },
+        { withCredentials: true }
       );
       if (response.status === 200) {
         setShowOtpStep(true);
@@ -86,7 +87,8 @@ export default function RiderSignup() {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/riders/register`,
-        riderSignupData
+        riderSignupData,
+        { withCredentials: true }
       );
       if (response.status === 201) {
         localStorage.setItem("token", response.data.token);
@@ -103,9 +105,11 @@ export default function RiderSignup() {
   const handleResendOtp = async () => {
     setLoading(true);
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/riders/send-otp`, {
-        email: formData.email,
-      });
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/riders/send-otp`,
+        { email: formData.email },
+        { withCredentials: true }
+      );
       alert("OTP resent successfully!");
     } catch (error) {
       alert("Failed to resend OTP");
