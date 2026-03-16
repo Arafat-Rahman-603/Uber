@@ -82,18 +82,26 @@ export default function UserSignup() {
   };
 
   const handleResendOtp = async () => {
-    setLoading(true);
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/users/send-otp`, {
+  setLoading(true);
+  try {
+    await axios.post(
+      `${import.meta.env.VITE_API_URL}/users/send-otp`,
+      {
         email: formData.email,
-      });
-      alert("OTP resent successfully!");
-    } catch (error) {
-      alert("Failed to resend OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
+      },
+      {
+        withCredentials: true
+      }
+    );
+
+    alert("OTP resent successfully!");
+  } catch (error) {
+    console.log(error);
+    alert("Failed to resend OTP");
+  } finally {
+    setLoading(false);
+  }
+};
 
   if (showOtpStep) {
     return (
