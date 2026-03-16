@@ -16,15 +16,11 @@ export default function UserSignup() {
   const confirmPasswordRef = useRef(null);
   const [hidepassword, setHidePassword] = useState(false);
   const [hideconfirmPassword, setHideConfirmPassword] = useState(false);
-  const [showOtpStep, setShowOtpStep] = useState(false);
-  const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
-  const [otpSent, setOtpSent] = useState(false);
-  const [formData, setFormData] = useState(null);
   const navigate = useNavigate();
   const setUser = useUserStore((state) => state.setUser);
 
-  const handleSendOtp = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     if (passwordRef.current.value !== confirmPasswordRef.current.value) {
@@ -41,34 +37,12 @@ export default function UserSignup() {
       password: passwordRef.current.value,
     };
 
-    setFormData(data);
-    setLoading(true);
-
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/users/send-otp`,
-        { email: data.email },
-        { withCredentials: true }
-      );
-      if (response.status === 200) {
-        setShowOtpStep(true);
-        setOtpSent(true);
-      }
-    } catch (error) {
-      alert(error.response?.data?.message || "Failed to send OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyAndRegister = async (e) => {
-    e.preventDefault();
     setLoading(true);
 
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/users/register`,
-        { ...formData, otp },
+        data,
         { withCredentials: true }
       );
       if (response.status === 201) {
@@ -83,88 +57,10 @@ export default function UserSignup() {
     }
   };
 
-  const handleResendOtp = async () => {
-  setLoading(true);
-  try {
-    await axios.post(
-      `${import.meta.env.VITE_API_URL}/users/send-otp`,
-      {
-        email: formData.email,
-      },
-      {
-        withCredentials: true
-      }
-    );
-
-    alert("OTP resent successfully!");
-  } catch (error) {
-    console.log(error);
-    alert("Failed to resend OTP");
-  } finally {
-    setLoading(false);
-  }
-};
-
-  if (showOtpStep) {
-    return (
-      <div className="w-full h-screen flex flex-col items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold">Verify Your Email</h2>
-            <p className="text-gray-500 mt-2">
-              We sent a 6-digit code to <strong>{formData?.email}</strong>
-            </p>
-          </div>
-          <form onSubmit={handleVerifyAndRegister}>
-            <input
-              type="text"
-              maxLength={6}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-              className="border-2 border-gray-200 rounded-md p-2 w-full h-14 text-center text-2xl font-bold tracking-[0.5em] mx-auto"
-              required
-              placeholder="000000"
-              autoFocus
-            />
-            <button
-              type="submit"
-              disabled={loading || otp.length !== 6}
-              className="bg-black px-4 flex justify-between items-center text-white w-full h-12 rounded-md mt-4 mx-auto font-semibold active:scale-95 transition-all duration-300 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <p></p>
-              <span className="text-xl">
-                {loading ? "Verifying..." : "Verify & Sign Up"}
-              </span>
-              <FaArrowRight />
-            </button>
-          </form>
-          <div className="flex justify-between mt-4">
-            <button
-              onClick={() => {
-                setShowOtpStep(false);
-                setOtp("");
-              }}
-              className="text-gray-500 font-semibold cursor-pointer"
-            >
-              ← Go Back
-            </button>
-            <button
-              onClick={handleResendOtp}
-              disabled={loading}
-              className="text-black font-semibold cursor-pointer disabled:opacity-50"
-            >
-              Resend Code
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <>
       <div className="w-full h-screen flex-col flex px-4 pt-8 pb-4 h-max ">
-        <form onSubmit={handleSendOtp}>
+        <form onSubmit={handleSignup}>
           <div className="flex flex-col items-start">
             <p className="text-[1rem] font-bold">Book your first ride,</p>
             <p className="text-[1.5rem] font-bold leading-0">
@@ -230,7 +126,7 @@ export default function UserSignup() {
           >
             <p className=""></p>
             <span className="text-xl">
-              {loading ? "Sending Code..." : "Continue"}
+              {loading ? "Signing Up..." : "Sign Up"}
             </span>
             <FaArrowRight className="" />
           </button>
